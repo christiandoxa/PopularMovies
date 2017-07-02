@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">Popular Movies</string>
+    <string name="error">An error has occurred. Please try again.</string>
+    <string name="image_description">Image of an movie.</string>
+    <string name="sort_by_popular">Sort by Popular</string>
+</resources>
