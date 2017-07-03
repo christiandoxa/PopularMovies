@@ -4,10 +4,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-/**
- * Created by doxa on 01/07/2017.
- */
-
 public class MovieJsonUtils {
     public static String[][] getSimpleMovieStringFromJson(String movieJsonStr) throws JSONException {
         final String TMDB_RESULT = "results";
@@ -17,7 +13,7 @@ public class MovieJsonUtils {
         final String TMDB_RATING = "vote_average";
         final String TMDB_RELEASE_DATE = "release_date";
 
-        String[][] parsedMovieData = null;
+        String[][] parsedMovieData;
         JSONObject movieJson = new JSONObject(movieJsonStr);
         JSONArray movieArray = movieJson.getJSONArray(TMDB_RESULT);
         parsedMovieData = new String[movieArray.length()][5];

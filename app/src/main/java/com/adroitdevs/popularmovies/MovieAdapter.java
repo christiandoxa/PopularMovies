@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
@@ -37,7 +36,6 @@ class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapterViewHol
         String imageForMovie = mMovieData[position][1];
         String urlImage = "http://image.tmdb.org/t/p/w185/" + imageForMovie;
         String number = String.valueOf(position + 1);
-        movieAdapterViewHolder.mNumberPosition.setText(" " + number + " ");
         ImageView imageDisplay = movieAdapterViewHolder.mDisplayImagePoster;
         Glide.with(context).load(urlImage).into(imageDisplay);
     }
@@ -54,17 +52,15 @@ class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapterViewHol
         notifyDataSetChanged();
     }
 
-    public interface MovieAdapterOnClickHandler {
+    interface MovieAdapterOnClickHandler {
         void onClick(Map<String, String> infoDetail);
     }
 
     class MovieAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         ImageView mDisplayImagePoster;
-        TextView mNumberPosition;
 
         MovieAdapterViewHolder(View view) {
             super(view);
-            mNumberPosition = (TextView) view.findViewById(R.id.number_position);
             mDisplayImagePoster = (ImageView) view.findViewById(R.id.iv_image_display);
             view.setOnClickListener(this);
         }

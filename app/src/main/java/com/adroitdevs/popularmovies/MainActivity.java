@@ -24,17 +24,25 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
     private static final String POPULAR_TMDB = "popular";
     private static final String TOP_RATED_TMDB = "top_rated";
+    private final int DEFAULT_PAGE = 1;
     private RecyclerView mRecyclerView;
     private MovieAdapter mMovieAdapter;
     private TextView mErrorMessageDisplay;
     private ProgressBar mLoadingIndicator;
     private String listPreference = POPULAR_TMDB;
-    private Toast toast;
+    private int page = DEFAULT_PAGE;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        if (getIntent().hasExtra("page") | getIntent().hasExtra("preference")) {
+            String preference = getIntent().getStringExtra("preference");
+            page = Integer.parseInt(getIntent().getStringExtra("page"));
+            listPreference = preference;
+        }
+
 
         mRecyclerView = (RecyclerView) findViewById(R.id.rv_popular_movies);
         mErrorMessageDisplay = (TextView) findViewById(R.id.tv_error_message_display);
@@ -50,7 +58,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
     private void loadMovieData(String preference) {
         showMovieDataView();
-        new FetchMovieTask().execute(preference);
+        new FetchMovieTask().execute(preference, String.valueOf(page));
     }
 
     private void showMovieDataView() {
@@ -79,6 +87,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
             setTitle("Popular Movies");
             mMovieAdapter.setMovieData(null);
             listPreference = POPULAR_TMDB;
+            page = 1;
             loadMovieData(listPreference);
             return true;
         }
@@ -86,8 +95,27 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
             setTitle("Highest Rated Movies");
             mMovieAdapter.setMovieData(null);
             listPreference = TOP_RATED_TMDB;
+            page = 1;
             loadMovieData(listPreference);
             return true;
+        }
+        if (id == R.id.next) {
+            CharSequence title = getTitle();
+            setTitle(title);
+            mMovieAdapter.setMovieData(null);
+            page += 1;
+            loadMovieData(listPreference);
+            return true;
+        }
+        if (id == R.id.previous) {
+            if (page > 1) {
+                CharSequence title = getTitle();
+                setTitle(title);
+                mMovieAdapter.setMovieData(null);
+                page -= 1;
+                loadMovieData(listPreference);
+                return true;
+            }
         }
 
         return super.onOptionsItemSelected(item);
@@ -95,21 +123,19 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
     @Override
     public void onClick(Map<String, String> infoDetail) {
-        if (toast != null) {
-            toast.cancel();
-        } else {
-            toast.makeText(this, infoDetail.get("title"), Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(this, DetailActivity.class);
-            String[] movieDetail = new String[5];
-            movieDetail[0] = infoDetail.get("title");
-            movieDetail[1] = infoDetail.get("image");
-            movieDetail[2] = infoDetail.get("synopsis");
-            movieDetail[3] = infoDetail.get("rating");
-            movieDetail[4] = infoDetail.get("releaseDate");
-            intent.putExtra("detail", movieDetail);
-            startActivity(intent);
-        }
+        Toast.makeText(this, infoDetail.get("title"), Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(this, DetailActivity.class);
+        String[] movieDetail = new String[7];
+        movieDetail[0] = infoDetail.get("title");
+        movieDetail[1] = infoDetail.get("image");
+        movieDetail[2] = infoDetail.get("synopsis");
+        movieDetail[3] = infoDetail.get("rating");
+        movieDetail[4] = infoDetail.get("releaseDate");
+        movieDetail[5] = listPreference;
+        movieDetail[6] = String.valueOf(page);
 
+        intent.putExtra("detail", movieDetail);
+        startActivity(intent);
     }
 
     private class FetchMovieTask extends AsyncTask<String, Void, String[][]> {
@@ -125,7 +151,9 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
                 return null;
 
             String preferenceSetting = params[0];
-            URL movieRequestUrl = NetworkUtils.buildUrl(preferenceSetting);
+            String page = params[1];
+
+            URL movieRequestUrl = NetworkUtils.buildUrl(preferenceSetting, page);
 
             try {
                 String jsonMovieResponse = NetworkUtils

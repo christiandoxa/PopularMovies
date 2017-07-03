@@ -7,6 +7,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -22,6 +23,17 @@ public class DetailActivity extends AppCompatActivity implements Serializable {
     TextView textViewDisplayRating;
     TextView textViewDisplaySynopsis;
     TextView textViewDisplayReleaseDate;
+    String preference, page;
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.putExtra("preference", preference);
+        intent.putExtra("page", page);
+        startActivity(intent);
+        finish();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,5 +76,23 @@ public class DetailActivity extends AppCompatActivity implements Serializable {
                         .setAction("Action", null).show();
             }
         });
+
+        preference = movieDetail[5];
+        page = movieDetail[6];
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                Intent intent = new Intent(this, MainActivity.class);
+                intent.putExtra("preference", preference);
+                intent.putExtra("page", page);
+                startActivity(intent);
+                finish();
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 }

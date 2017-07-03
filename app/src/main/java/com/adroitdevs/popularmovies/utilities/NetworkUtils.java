@@ -10,23 +10,18 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Scanner;
 
-/**
- * Created by doxa on 01/07/2017.
- */
-
 public class NetworkUtils {
     private final static String TAG = NetworkUtils.class.getSimpleName();
     private final static String MOVIE_BASE_URL = "https://api.themoviedb.org/3/movie/";
     private final static String API_KEY = "58524a76666af7251dfda9c37f7e940b";
-    private final static String PAGE = "1";
     private final static String API_KEY_PARAM = "api_key";
     private final static String PAGE_PARAM = "page";
 
-    public static URL buildUrl(String preferenceSetting) {
+    public static URL buildUrl(String preferenceSetting, String page) {
         Uri builtUri = Uri.parse(MOVIE_BASE_URL).buildUpon()
                 .appendPath(preferenceSetting)
                 .appendQueryParameter(API_KEY_PARAM, API_KEY)
-                .appendQueryParameter(PAGE_PARAM, PAGE)
+                .appendQueryParameter(PAGE_PARAM, page)
                 .build();
         URL url = null;
         try {

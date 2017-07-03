@@ -7,6 +7,15 @@
         app:showAsAction="never" />
     <item
         android:id="@+id/sort_by_highest_rated"
-        android:title="Sort by Highest Rated"
+        android:title="@string/sort_by_highest_rated"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/next"
+        android:orderInCategory="1"
+        android:title="@string/next"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/previous"
+        android:title="@string/prev"
+        app:showAsAction="always" />
 </menu>
