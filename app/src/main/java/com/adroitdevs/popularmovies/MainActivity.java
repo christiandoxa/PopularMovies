@@ -1,5 +1,6 @@
 package com.adroitdevs.popularmovies;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -11,13 +12,15 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.adroitdevs.popularmovies.utilities.MovieJsonUtils;
 import com.adroitdevs.popularmovies.utilities.NetworkUtils;
 
 import java.net.URL;
+import java.util.Map;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements MovieAdapter.MovieAdapterOnClickHandler {
 
     private static final String POPULAR_TMDB = "popular";
     private static final String TOP_RATED_TMDB = "top_rated";
@@ -26,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView mErrorMessageDisplay;
     private ProgressBar mLoadingIndicator;
     private String listPreference = POPULAR_TMDB;
+    private Toast toast;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
 
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setHasFixedSize(true);
-        mMovieAdapter = new MovieAdapter();
+        mMovieAdapter = new MovieAdapter(this);
         mRecyclerView.setAdapter(mMovieAdapter);
         loadMovieData(listPreference);
     }
@@ -87,6 +91,25 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onClick(Map<String, String> infoDetail) {
+        if (toast != null) {
+            toast.cancel();
+        } else {
+            toast.makeText(this, infoDetail.get("title"), Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(this, DetailActivity.class);
+            String[] movieDetail = new String[5];
+            movieDetail[0] = infoDetail.get("title");
+            movieDetail[1] = infoDetail.get("image");
+            movieDetail[2] = infoDetail.get("synopsis");
+            movieDetail[3] = infoDetail.get("rating");
+            movieDetail[4] = infoDetail.get("releaseDate");
+            intent.putExtra("detail", movieDetail);
+            startActivity(intent);
+        }
+
     }
 
     private class FetchMovieTask extends AsyncTask<String, Void, String[][]> {

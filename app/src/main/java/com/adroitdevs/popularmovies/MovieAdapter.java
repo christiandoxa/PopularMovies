@@ -10,9 +10,17 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
+import java.util.HashMap;
+import java.util.Map;
+
 class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapterViewHolder> {
+    private final MovieAdapterOnClickHandler mClickHandler;
     private String[][] mMovieData;
     private Context context;
+
+    MovieAdapter(MovieAdapterOnClickHandler clickHandler) {
+        this.mClickHandler = clickHandler;
+    }
 
     @Override
     public MovieAdapterViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
@@ -46,7 +54,11 @@ class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapterViewHol
         notifyDataSetChanged();
     }
 
-    class MovieAdapterViewHolder extends RecyclerView.ViewHolder {
+    public interface MovieAdapterOnClickHandler {
+        void onClick(Map<String, String> infoDetail);
+    }
+
+    class MovieAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         ImageView mDisplayImagePoster;
         TextView mNumberPosition;
 
@@ -54,6 +66,19 @@ class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapterViewHol
             super(view);
             mNumberPosition = (TextView) view.findViewById(R.id.number_position);
             mDisplayImagePoster = (ImageView) view.findViewById(R.id.iv_image_display);
+            view.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            int adapterPosition = getAdapterPosition();
+            Map<String, String> infoDetail = new HashMap<>();
+            infoDetail.put("title", mMovieData[adapterPosition][0]);
+            infoDetail.put("image", mMovieData[adapterPosition][1]);
+            infoDetail.put("synopsis", mMovieData[adapterPosition][2]);
+            infoDetail.put("rating", mMovieData[adapterPosition][3]);
+            infoDetail.put("releaseDate", mMovieData[adapterPosition][4]);
+            mClickHandler.onClick(infoDetail);
         }
     }
 
